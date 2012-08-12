@@ -39,7 +39,7 @@ public class ClockActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.main);
+        setContentView(R.layout.clock);
 
         timers = new HashMap<Button, Integer>();
         toggled = new HashMap<Button, Boolean>();
