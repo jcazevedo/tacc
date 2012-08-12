@@ -1,5 +1,7 @@
 package net.jcazevedo.tacc;
 
+import java.util.Map;
+import java.util.HashMap;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,23 +14,22 @@ public class TaccActivity extends Activity {
     private ToggleButton whitePlayerButton;
     private ToggleButton blackPlayerButton;
 
-    private Integer whitePlayerSeconds;
-    private Integer blackPlayerSeconds;
+    private Map<ToggleButton, Integer> seconds = new HashMap<ToggleButton, Integer>();
 
     private Handler timerHandler = new Handler();
 
     private class TimerRunnable implements Runnable {
         private ToggleButton button;
-        private Integer timer;
 
-        public TimerRunnable(ToggleButton _button, Integer _timer) {
+        public TimerRunnable(ToggleButton _button) {
             button = _button;
-            timer = _timer;
         }
 
         public void run() {
-            button.setText(timer / 60 + ":" + timer % 60);
-            timer--;
+            int time = seconds.get(button);
+
+            button.setText(time / 60 + ":" + time % 60);
+            seconds.put(button, --time);
             timerHandler.postDelayed(this, 1000);
         }
     }
@@ -39,11 +40,11 @@ public class TaccActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
 
-        whitePlayerSeconds = 300;
-        blackPlayerSeconds = 300;
-
         whitePlayerButton = (ToggleButton) findViewById(R.id.white_player_button);
         blackPlayerButton = (ToggleButton) findViewById(R.id.black_player_button);
+        seconds.put(whitePlayerButton, 300);
+        seconds.put(blackPlayerButton, 300);
+
         addListenerOnButtons();
     }
 
@@ -62,13 +63,9 @@ public class TaccActivity extends Activity {
     private void toggle(ToggleButton buttonPressed) {
         timerHandler.removeCallbacksAndMessages(null);
         if (buttonPressed == whitePlayerButton) {
-            timerHandler.postDelayed(new TimerRunnable(blackPlayerButton,
-                                                       blackPlayerSeconds),
-                                     1000);
+            timerHandler.post(new TimerRunnable(blackPlayerButton));
         } else {
-            timerHandler.postDelayed(new TimerRunnable(whitePlayerButton,
-                                                       whitePlayerSeconds),
-                                     1000);
+            timerHandler.post(new TimerRunnable(whitePlayerButton));
         }
     }
 
@@ -82,8 +79,9 @@ public class TaccActivity extends Activity {
 
     private void createListener(ToggleButton button){
     	button.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				toggle((ToggleButton) v);
+            public void onClick(View v) {
+                ToggleButton button = (ToggleButton) v;
+				toggle(button);
 			}
     	});
     }
