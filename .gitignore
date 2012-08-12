@@ -4,3 +4,4 @@ gen
 .project
 *.apk
 *~
+.settings
