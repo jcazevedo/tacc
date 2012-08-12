@@ -54,8 +54,14 @@ public class ClockActivity extends Activity {
     private void updateButtonText(Button button) {
         int time = timers.get(button);
         int seconds = time / 1000;
+        boolean negative = false;
 
-        button.setText(String.format("%02d:%02d", seconds / 60, seconds % 60));
+        if (seconds < 0) {
+            negative = true;
+            seconds = -seconds;
+        }
+
+        button.setText((negative ? "-" : "") + String.format("%02d:%02d", seconds / 60, seconds % 60));
     }
 
     private void pause() {
