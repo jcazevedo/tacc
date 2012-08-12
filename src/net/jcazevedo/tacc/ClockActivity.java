@@ -1,10 +1,8 @@
 package net.jcazevedo.tacc;
 
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View.OnClickListener;
@@ -14,7 +12,7 @@ import android.widget.Button;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TaccActivity extends Activity {
+public class ClockActivity extends Activity {
     private static int REFRESH_MS = 10;
 
     private Button whitePlayerButton;
