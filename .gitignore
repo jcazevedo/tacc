@@ -5,3 +5,4 @@ gen
 *.apk
 *~
 .settings
+prj.el
