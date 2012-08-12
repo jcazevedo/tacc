@@ -52,15 +52,6 @@ public class TaccActivity extends Activity {
         addListenerOnButtons();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-    }
-
     private void pause() {
     }
 
