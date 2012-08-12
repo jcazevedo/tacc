@@ -8,29 +8,32 @@ import android.view.MenuInflater;
 import android.view.View.OnClickListener;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
-import java.util.HashMap;
-import java.util.Map;
+import net.jcazevedo.tacc.view.ClockButton;
 
 public class ClockActivity extends Activity {
-    private static int REFRESH_MS = 10;
+    private static int REFRESH_MS = 50;
 
-    private Button whitePlayerButton;
-    private Button blackPlayerButton;
-    private Map<Button, Integer> timers;
-    private Map<Button, Boolean> toggled;
+    private ClockButton whitePlayerButton;
+    private ClockButton blackPlayerButton;
     private Handler timerHandler = new Handler();
 
     private class TimerRunnable implements Runnable {
-        private Button button;
+        private ClockButton button;
+        private Long prevTimestamp;
 
-        public TimerRunnable(Button _button) {
+        public TimerRunnable(ClockButton _button) {
             button = _button;
+            prevTimestamp = null;
         }
 
         public void run() {
-            updateButtonText(button);
-            timers.put(button, timers.get(button) - REFRESH_MS);
+            Long currentTimestamp = System.currentTimeMillis();
+            long refresh = 0;
+            if (prevTimestamp != null)
+                refresh = currentTimestamp - prevTimestamp;
+            prevTimestamp = currentTimestamp;
+
+            button.setTime(button.getTime() - refresh);
             timerHandler.postDelayed(this, REFRESH_MS);
         }
     }
@@ -41,53 +44,35 @@ public class ClockActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.clock);
 
-        timers = new HashMap<Button, Integer>();
-        toggled = new HashMap<Button, Boolean>();
-
-        whitePlayerButton = (Button) findViewById(R.id.white_player_button);
-        blackPlayerButton = (Button) findViewById(R.id.black_player_button);
+        whitePlayerButton = (ClockButton) findViewById(R.id.white_player_button);
+        blackPlayerButton = (ClockButton) findViewById(R.id.black_player_button);
 
         reset();
         addListenerOnButtons();
-    }
-
-    private void updateButtonText(Button button) {
-        int time = timers.get(button);
-        int seconds = time / 1000;
-        boolean negative = false;
-
-        if (seconds < 0) {
-            negative = true;
-            seconds = -seconds;
-        }
-
-        button.setText((negative ? "-" : "") + String.format("%02d:%02d", seconds / 60, seconds % 60));
     }
 
     private void pause() {
         timerHandler.removeCallbacksAndMessages(null);
     }
 
-    private void toggle(Button buttonPressed) {
+    private void toggle(ClockButton buttonPressed) {
         timerHandler.removeCallbacksAndMessages(null);
         if (buttonPressed == whitePlayerButton) {
-            timerHandler.post(new TimerRunnable(blackPlayerButton));
-            toggled.put(blackPlayerButton, true);
-            toggled.put(whitePlayerButton, false);
+            timerHandler.postDelayed(new TimerRunnable(blackPlayerButton), REFRESH_MS);
+            blackPlayerButton.setToggled(true);
+            whitePlayerButton.setToggled(false);
         } else {
-            timerHandler.post(new TimerRunnable(whitePlayerButton));
-            toggled.put(blackPlayerButton, false);
-            toggled.put(whitePlayerButton, true);
+            timerHandler.postDelayed(new TimerRunnable(whitePlayerButton), REFRESH_MS);
+            blackPlayerButton.setToggled(false);
+            whitePlayerButton.setToggled(true);
         }
     }
 
     private void reset() {
-        timers.put(whitePlayerButton, 300000);
-        timers.put(blackPlayerButton, 300000);
-        toggled.put(whitePlayerButton, false);
-        toggled.put(blackPlayerButton, false);
-        updateButtonText(whitePlayerButton);
-        updateButtonText(blackPlayerButton);
+        whitePlayerButton.setTime(300000);
+        blackPlayerButton.setTime(300000);
+        whitePlayerButton.setToggled(false);
+        whitePlayerButton.setToggled(false);
     }
 
     public void addListenerOnButtons() {
@@ -95,10 +80,10 @@ public class ClockActivity extends Activity {
         createListener(this.blackPlayerButton);
     }
 
-    private void createListener(Button button){
+    private void createListener(ClockButton button){
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                Button button = (Button) v;
+                ClockButton button = (ClockButton) v;
                 toggle(button);
             }
         });
