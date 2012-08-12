@@ -1,7 +1,5 @@
 package net.jcazevedo.tacc;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -9,32 +7,33 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View;
 import android.view.Window;
-import android.widget.ToggleButton;
+import android.widget.Button;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TaccActivity extends Activity {
-    private ToggleButton whitePlayerButton;
-    private ToggleButton blackPlayerButton;
+    private static int REFRESH_MS = 10;
 
-    private Map<ToggleButton, Integer> seconds = new HashMap<ToggleButton, Integer>();
-
+    private Button whitePlayerButton;
+    private Button blackPlayerButton;
+    private Map<Button, Integer> timers;
+    private Map<Button, Boolean> toggled;
     private Handler timerHandler = new Handler();
 
     private class TimerRunnable implements Runnable {
-        private ToggleButton button;
+        private Button button;
 
-        public TimerRunnable(ToggleButton _button) {
+        public TimerRunnable(Button _button) {
             button = _button;
         }
 
         public void run() {
-            int time = seconds.get(button);
-
-            button.setText(time / 60 + ":" + time % 60);
-            seconds.put(button, --time);
-            timerHandler.postDelayed(this, 1000);
+            updateButtonText(button);
+            timers.put(button, timers.get(button) - REFRESH_MS);
+            timerHandler.postDelayed(this, REFRESH_MS);
         }
     }
 
@@ -44,27 +43,47 @@ public class TaccActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
 
-        whitePlayerButton = (ToggleButton) findViewById(R.id.white_player_button);
-        blackPlayerButton = (ToggleButton) findViewById(R.id.black_player_button);
-        seconds.put(whitePlayerButton, 300);
-        seconds.put(blackPlayerButton, 300);
+        timers = new HashMap<Button, Integer>();
+        toggled = new HashMap<Button, Boolean>();
 
+        whitePlayerButton = (Button) findViewById(R.id.white_player_button);
+        blackPlayerButton = (Button) findViewById(R.id.black_player_button);
+
+        reset();
         addListenerOnButtons();
     }
 
-    private void pause() {
+    private void updateButtonText(Button button) {
+        int time = timers.get(button);
+        int seconds = time / 1000;
+
+        button.setText(String.format("%02d:%02d", seconds / 60, seconds % 60));
     }
 
-    private void toggle(ToggleButton buttonPressed) {
+    private void pause() {
+        timerHandler.removeCallbacksAndMessages(null);
+    }
+
+    private void toggle(Button buttonPressed) {
         timerHandler.removeCallbacksAndMessages(null);
         if (buttonPressed == whitePlayerButton) {
             timerHandler.post(new TimerRunnable(blackPlayerButton));
+            toggled.put(blackPlayerButton, true);
+            toggled.put(whitePlayerButton, false);
         } else {
             timerHandler.post(new TimerRunnable(whitePlayerButton));
+            toggled.put(blackPlayerButton, false);
+            toggled.put(whitePlayerButton, true);
         }
     }
 
     private void reset() {
+        timers.put(whitePlayerButton, 300000);
+        timers.put(blackPlayerButton, 300000);
+        toggled.put(whitePlayerButton, false);
+        toggled.put(blackPlayerButton, false);
+        updateButtonText(whitePlayerButton);
+        updateButtonText(blackPlayerButton);
     }
 
     public void addListenerOnButtons() {
@@ -72,20 +91,19 @@ public class TaccActivity extends Activity {
     	createListener(this.blackPlayerButton);
     }
 
-    private void createListener(ToggleButton button){
+    private void createListener(Button button){
     	button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                ToggleButton button = (ToggleButton) v;
+                Button button = (Button) v;
 				toggle(button);
 			}
     	});
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
-        Log.i("tacc", "entering onCreateContextMenu");
         return true;
     }
 }
