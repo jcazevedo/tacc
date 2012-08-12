@@ -6,8 +6,8 @@ import android.view.Window;
 import android.widget.ToggleButton;
 
 public class TaccActivity extends Activity {
-    ToggleButton whitePlayerButton;
-    ToggleButton blackPlayerButton;
+    private ToggleButton whitePlayerButton;
+    private ToggleButton blackPlayerButton;
 
     /** Called when the activity is first created. */
     @Override
