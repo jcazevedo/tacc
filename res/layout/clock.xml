@@ -3,14 +3,14 @@
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
-  <Button
-      android:id="@+id/white_player_button"
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      android:layout_weight="0.5" />
-  <Button
-      android:id="@+id/black_player_button"
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      android:layout_weight="0.5" />
+  <Button android:id="@+id/white_player_button"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:textSize="100dp"
+          android:layout_weight="0.5" />
+  <Button android:id="@+id/black_player_button"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:textSize="100dp"
+          android:layout_weight="0.5" />
 </LinearLayout>
