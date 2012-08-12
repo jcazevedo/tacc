@@ -1,12 +1,16 @@
 package net.jcazevedo.tacc;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.os.Handler;
 import android.view.Window;
 import android.widget.ToggleButton;
 
@@ -84,5 +88,13 @@ public class TaccActivity extends Activity {
 				toggle(button);
 			}
     	});
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        Log.i("tacc", "entering onCreateContextMenu");
+        return true;
     }
 }
