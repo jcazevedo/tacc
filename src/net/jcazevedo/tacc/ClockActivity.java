@@ -91,17 +91,17 @@ public class ClockActivity extends Activity {
     }
 
     public void addListenerOnButtons() {
-    	createListener(this.whitePlayerButton);
-    	createListener(this.blackPlayerButton);
+        createListener(this.whitePlayerButton);
+        createListener(this.blackPlayerButton);
     }
 
     private void createListener(Button button){
-    	button.setOnClickListener(new OnClickListener() {
+        button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Button button = (Button) v;
-				toggle(button);
-			}
-    	});
+                toggle(button);
+            }
+        });
     }
 
     @Override
